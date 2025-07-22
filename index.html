@@ -1,8 +1,20 @@
-<body style="margin:0;overflow:hidden"><canvas style="width:100vw;height:100vh"></canvas>
-    <script>
-        let h, w, d, gl, v, f, p, s, c = document.querySelector('canvas'), r = new Date().getTime();
-        v = `attribute vec3 p;void main(){gl_Position=vec4(p,1);}`;
-        f = `
+<!DOCTYPE html>
+<html>
+    <head>
+        <link href="./stuff.css" rel="stylesheet">
+    </head>
+    <body>
+        <canvas></canvas>
+        <!-- selectors -->
+        <!-- acronym and definition --> 
+        
+        <!-- selectors and acronym beside canvas, definition below -->
+
+
+        <script>
+            let h, w, d, gl, v, f, p, s, c = document.querySelector('canvas'), r = new Date().getTime();
+            v = `attribute vec3 p;void main(){gl_Position=vec4(p,1);}`;
+            f = `
 precision highp float;
 uniform float iTime;
 uniform vec2 iResolution;
@@ -24,30 +36,30 @@ float dist(int i){
         if(i==0 ) return 0.;
         if(i==1 ) return 0.;
         if(i==2 ) return 0.;
-        if(i==3 ) return (select.x)/flines;
+        if(i==3 ) return (select.x+1.)/flines;
         if(i==4 ) return 1./flines;
         if(i==5 ) return 1./flines;
     } else if (i < 12) {
-        if(i==6 ) return -(select.x-1.)/flines;
+        if(i==6 ) return -(select.x)/flines;
         if(i==7 ) return 0.;
         if(i==8 ) return 0.;
-        if(i==9 ) return (select.x)/flines;
-        if(i==10) return (select.y)/flines;
+        if(i==9 ) return (select.x+1.)/flines;
+        if(i==10) return (select.y+1.)/flines;
         if(i==11) return 1./flines;
     } else if (i < 18) {
-        if(i==12) return -(select.x-1.)/flines;
-        if(i==13) return -(select.y-1.)/flines;
+        if(i==12) return -(select.x)/flines;
+        if(i==13) return -(select.y)/flines;
         if(i==14) return 0.;
-        if(i==15) return (select.x)/flines;
-        if(i==16) return (select.y)/flines;
-        if(i==17) return (select.z-1.)/flines;
+        if(i==15) return (select.x+1.)/flines;
+        if(i==16) return (select.y+1.)/flines;
+        if(i==17) return (select.z)/flines;
     } else {
-        if(i==18) return -(select.x-1.)/flines;
-        if(i==19) return -(select.y-1.)/flines;
-        if(i==20) return -(select.z-1.)/flines;
-        if(i==21) return (select.x)/flines;
-        if(i==22) return (select.y)/flines;
-        if(i==23) return (select.z)/flines;
+        if(i==18) return -(select.x)/flines;
+        if(i==19) return -(select.y)/flines;
+        if(i==20) return -(select.z)/flines;
+        if(i==21) return (select.x+1.)/flines;
+        if(i==22) return (select.y+1.)/flines;
+        if(i==23) return (select.z+1.)/flines;
     }
 }
 
@@ -68,7 +80,7 @@ float planeRay(vec3 ro, vec3 rd, vec3 norm, float d){
     if (
         (b < 0. && a > 0.) 
         //|| (b > 0. && a < 0.) 
-        //|| b == 0. 
+        || b == 0. 
         //|| a == 0.
     ) return 1e9;
     return a / b;
@@ -141,9 +153,14 @@ void mainImage( out vec4 O, vec2 U ){
 
     float x = .8*smoothstep(3./r.y, 0., d);
     
-    O = vec4(0,0,0,1);
+    O = vec4(0,0,0,0);
     if (minT - maxT < 0. && d > 8./r.y) return;
-    
+    if (minT - maxT < 0.){
+        O.a = smoothstep(3./r.y, 0., d);
+    } else {
+        O.a = 1.;
+    }
+
     for (int z = 0; z <= lines; z+=lines){
         for (int x = 1; x < lines; x++){
             float fx = float(x)/flines;
@@ -164,7 +181,7 @@ void mainImage( out vec4 O, vec2 U ){
     //x = .1 * exp(-pow(d / (2./r.y), 2.));
     
     x = mix(x, .8, .1*exp(-pow(d / (2./r.y), 2.)));
-    O = vec4(x);    
+    O.xyz = vec3(x);    
     // end of rasterization
 
     // raytracing
@@ -195,58 +212,72 @@ void mainImage( out vec4 O, vec2 U ){
         #endif
     }
     
-    O = pow(O, vec4(1./2.2));
-    O.a = 1.;
+    O.xyz = pow(O.xyz, vec3(1./2.2));
 }
 
 void main(){
     mainImage(gl_FragColor, gl_FragCoord.xy);
 }
-    `;
+            `;
+    
+            gl = null;
+            if( gl === null) gl = c.getContext( "webgl2" );
+            if( gl === null) gl = c.getContext( "experimental-webgl2" );
+            if( gl === null) gl = c.getContext( "webgl" );
+            if( gl === null) gl = c.getContext( "experimental-webgl" );
+    
+            gl.bindBuffer(34962, gl.createBuffer());
+            gl.bufferData(34962, new Float32Array([-3, -1, 3, -1, 0, 2]), 35044);
+            p = gl.createProgram();
+            gl.attachShader(p, k(v, 35633));
+            gl.attachShader(p, k(f, 35632));
+            gl.linkProgram(p);
+            function x() {
+                if (w != c.clientWidth || h != c.clientHeight) {
+                    w = c.clientWidth;
+                    h = c.clientHeight;
+                    c.width = w;
+                    c.height = h;
+                    gl.viewport(0, 0, w, h)
+                } 
+                
+                if (window.innerHeight > window.innerWidth){
+                    c.style.width = "100vw";
+                } else {
+                    c.style.width = "50vw";
+                }
+                
+                gl.useProgram(p);
+                let time_ms = (new Date().getTime() - r);
+                gl.uniform1f(gl.getUniformLocation(p, 'iTime'), time_ms / 1e3);
+                gl.uniform2f(gl.getUniformLocation(p, 'iResolution'), w, h);
+                gl.uniform2f(gl.getUniformLocation(p, 'iMouse'), 
+                    time_ms*w / 2e3, 
+                    h/2
+                );
+                gl.uniform3f(gl.getUniformLocation(p, 'select'), 
+                    Math.sin(time_ms / 1e3 + 0)*12.5 + 12.5, 
+                    Math.sin(time_ms / 1e3 + 1)*12.5 + 12.5, 
+                    Math.sin(time_ms / 1e3 + 2)*12.5 + 12.5
+                );
+                gl.vertexAttribPointer(s, 2, 5126, 0, 0, 0);
+                gl.enableVertexAttribArray(s);
+                gl.drawArrays(4, 0, 3);
+                requestAnimationFrame(x)
+                
+            } 
+            function k(q, e) {
+                d = gl.createShader(e);
+                gl.shaderSource(d, q);
+                gl.compileShader(d);
+                return d
+            }
+            x();
 
-        gl = null;
-        if( gl === null) gl = c.getContext( "webgl2" );
-        if( gl === null) gl = c.getContext( "experimental-webgl2" );
-        if( gl === null) gl = c.getContext( "webgl" );
-        if( gl === null) gl = c.getContext( "experimental-webgl" );
-
-        gl.bindBuffer(34962, gl.createBuffer());
-        gl.bufferData(34962, new Float32Array([-3, -1, 3, -1, 0, 2]), 35044);
-        p = gl.createProgram();
-        gl.attachShader(p, k(v, 35633));
-        gl.attachShader(p, k(f, 35632));
-        gl.linkProgram(p);
-        x();
-        function x() {
-            if (w != c.clientWidth || h != c.clientHeight) {
-                w = c.clientWidth;
-                h = c.clientHeight;
-                c.width = w;
-                c.height = h;
-                gl.viewport(0, 0, w, h)
-            } gl.useProgram(p);
-            let time_ms = (new Date().getTime() - r);
-            gl.uniform1f(gl.getUniformLocation(p, 'iTime'), time_ms / 1e3);
-            gl.uniform2f(gl.getUniformLocation(p, 'iResolution'), w, h);
-            gl.uniform2f(gl.getUniformLocation(p, 'iMouse'), 
-                time_ms*w / 2 / 1e3, 
-                h/2
-            );
-            gl.uniform3f(gl.getUniformLocation(p, 'select'), 
-                1. + Math.sin(time_ms / 1e3 + 0)*12.5 + 12.5, 
-                1. + Math.sin(time_ms / 1e3 + 1)*12.5 + 12.5, 
-                1. + Math.sin(time_ms / 1e3 + 2)*12.5 + 12.5
-            );
-            gl.vertexAttribPointer(s, 2, 5126, 0, 0, 0);
-            gl.enableVertexAttribArray(s);
-            gl.drawArrays(4, 0, 3);
-            requestAnimationFrame(x)
-        } 
-        function k(q, e) {
-            d = gl.createShader(e);
-            gl.shaderSource(d, q);
-            gl.compileShader(d);
-            return d
-        }
-    </script>
-</body>
+    //  fetch('https://server.com/data.json')
+    //      .then((response) => response.json())
+    //      .then((json) => console.log(json));
+            
+        </script>
+    </body>
+</html>

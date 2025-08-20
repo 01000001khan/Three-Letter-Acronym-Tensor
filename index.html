@@ -2,13 +2,48 @@
 <html>
     <head>
         <link href="./stuff.css" rel="stylesheet">
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,100..800;1,100..800&display=swap" rel="stylesheet">
     </head>
     <body>
-        <canvas></canvas>
-        <!-- selectors -->
-        <!-- acronym and definition --> 
-        
+        <div id="topbox">
+            <canvas></canvas>
+
+            <!-- acronym and definition --> 
+            <!-- selectors -->
+            <div id="selectorBox">
+                <h1>AAA</h1>
+                <!-- <input type="range" min="0" max="26" step="1">
+                <input type="range" min="0" max="26" step="1">
+                <input type="range" min="0" max="26" step="1"> -->
+
+                <table>
+                    <tr class="selectors" style="color: #000;">
+                        <th>error</th>
+                    </tr>
+                </table>
+                <br>
+                <table>
+                    <tr class="selectors" style="color: #000;">
+                        <th>is js enabled?</th>
+                    </tr>
+                </table>
+                <br>
+                <table>
+                    <tr class="selectors" style="color: #000;">
+                        <th>js is very important</th>
+                    </tr>
+                </table>
+
+
+            </div>
+        </div>
+        <br>
+        <hr>
+        <br>
         <!-- selectors and acronym beside canvas, definition below -->
+        <!-- if vertical aspect, acronym, selectors, definition below -->
 
 
         <script>
@@ -274,10 +309,64 @@ void main(){
             }
             x();
 
-    //  fetch('https://server.com/data.json')
-    //      .then((response) => response.json())
-    //      .then((json) => console.log(json));
-            
+
+
+
+            let mouseIsDown = false;
+            let selectorString = "_ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+            console.log(selectorString.length);
+            let selectors = document.querySelectorAll(".selectors");
+            selectors.forEach((e) => {
+                e.removeChild(e.lastElementChild);
+                for (let i = 0; i < selectorString.length; i++){
+                    e.insertAdjacentHTML("beforeend",`<td class="selector">${selectorString[i]}</td>`);
+                }
+            });
+
+            document.body.addEventListener("mousedown", (e) => {
+                mouseIsDown = true;
+            });
+            document.body.addEventListener("mouseup", (e) => {
+                mouseIsDown = false;
+            });
+
+            selectors.forEach((e) => {
+                let ch = e.children;
+                for (let i = 0; i < ch.length; i++){
+                    ch[i].addEventListener("mouseover", (c) => {
+                        if (mouseIsDown){
+                            let prevIndex = parseInt(e.style.color.replace("rgb(","").replace(", 0, 0)",""));
+                            console.log(prevIndex);
+                            ch[prevIndex].className = ""; // reset old
+ 
+                            c.srcElement.className = "selected"; // set new
+                            // order ensures overwriting current is allowed
+
+                            let currentIndex = -1;
+                            for (let j = 0; j < ch.length; j++){ // stupid loop. Eliminate somehow?
+                                if (ch[j] === c.srcElement){
+                                    currentIndex = j;
+                                    break;
+                                } 
+                            }
+                            e.style.color = `rgb(${currentIndex}, 0, 0)`; // record new data
+                        }
+                    });
+                }
+            });
+
+
+            fetch('./data.json')
+                .then((response) => response.json())
+                .then((json) => {
+                    
+                    console.log(json)
+                
+            });
+                    
+
+
+
         </script>
     </body>
 </html>
